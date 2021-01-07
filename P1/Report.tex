@@ -1,0 +1,37 @@
+\documentclass[11pt]{article}
+
+% Handle Spanish seamlessly!
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+
+\usepackage{geometry}
+\geometry{
+    a4paper,
+    left = 17mm,
+    right = 17mm,
+    top = 12mm,
+    bottom = 20mm
+}
+
+\title{Acostumbrándonos al entorno \texttt{GNS3}}
+\author{Pablo Collado Soto \\ \\ \textit{Ingeniería de Tráfico}}
+\date{}
+
+\begin{document}
+    \maketitle
+
+    \section{Introducción}
+        En esta práctica vamos a intentar familiarizarnos con el entorno \texttt{GNS3} así como con \texttt{mgen}, herramienta con la que generamos tráfico para poner a prueba la red bajo estudio. Tenga en cuenta que los archivos que se han empleado para generar tráfico en el escenario, así como los archivos que recogen el tráfico real sobre la red se adjuntan en el repositorio asociado.\\
+
+        En nuestro escenario contamos con un equipo \texttt{SRC} que generará tráfico que atravesará al router \texttt{R1} para llegar al equipo \texttt{DST}. Como cabría esperar, \texttt{R1} cuenta con $2$ interfaces. La primera pertenece a la misma subred que \texttt{SRC} y la segunda a la misma que \texttt{DST}. Para poder controlar la congestión en el encaminador a nuestro antojo modificaremos la velocidad de la interfaz conectada a \texttt{DST} desde el punto de vista de la capa de red. Al estar empleando interfaces \texttt{fastEthernet} podríamos esperar una tasa en las líneas asociadas de $100\ Mbps$. No obstante y debido a las limitaciones intrínsecas a nuestro escenario virtualizado veremos que esas velocidades se "quedan" en unos $20\ Mbps$. No especificamos una velocidad ya que la velocidad real variará ligeramente en función de la potencia del equipo sobre el que ejecutemos las simulaciones. En nuestro caso disponemos de $16\ GB$ de memoria \texttt{RAM} y un procesador \textit{Intel(R) Core(TM) i7-5500U CPU @ 2.40GHz} tal y como indica el comando \texttt{lscpu}. Nuestro sistema operativo anfitrión es \texttt{Ubuntu 20.04}.
+
+        \section{Configurando carpetas compartidas}
+            Antes de proceder a probar el escenario queremos dedicar una pequeña sección a explicar la configuración que hemos llevado a cabo en las máquinas virtuales para poder extraer los archivos que recogen las trazas de tráfico en base a las cuales obtendremos las gráficas que adjuntamos en el documento. Personalmente no nos agrada demasiado trabajar dentro de máquinas virtuales y, al estar ejecutando \texttt{Ubuntu} de forma nativa preferimos generar las gráficas en nuestro propio equipo para poder guardarlas de manera más cómoda.\\
+
+            Para conseguir compartir archivos basta con configurar las carpetas compartidas en cada una de las $3$ máquinas virtuales del entorno. Comenzaremos explicando la jerarquía que debemos crear desde la máquina anfitriona. En el sistema operativo nativo solo debemos crear un directorio en el que se almacenarán todos los archivos generados. En nuestro caso lo hemos nombrado \texttt{VMWare\_shares} y la ruta absoluta hasta él viene dada por \texttt{/home/pablo/VMWare\_shares}. En el \textit{VMWare Player} que ejecutamos en el anfitrión configuraremos una carpeta compartida en el menú \texttt{Virtual Machine > Virtual Machine Settings} al que también podemos acceder con \texttt{CTRL + D}. Una vez dentro hacemos click en \texttt{Options} y creamos una carpeta compartida cuyo \texttt{Host Path} apunte a \texttt{/home/pablo/VMWare\_shares}. Debemos anotar el nombre que le damos al directorio compartido ya que después de crearlo aparecerá la carpeta \texttt{/mnt/hgfs/Foo} donde \texttt{Foo} es el nombre que nosotros le hemos dado a la carpeta compartida en cuestión. A fin de trabajar de manera más cómoda hemos creado un \textit{enalce simbólico} a dicho directorio en el directorio de conexión del usuario \texttt{itraf} en la máquina virtual. En otras palabras, hemos ejecutado \texttt{ln -s /mnt/hgfs/Foo /home/itraf/Host\_shares} con lo que el directorio \texttt{Host\_shares} es un enlace a la carpeta compartida.\\
+
+            En cada una de las máquinas que lanzamos al ejecutar el escenario de \texttt{GNS3} haremos algo parecido. Navegando por \texttt{VM > Settings} (o pulsando de nuevo \texttt{CTRL + D}) configuramos una nueva carpeta compartida en cada máquina. Llamaremos a dicha carpeta \texttt{Foo} de nuevo y la apuntaremos contra el directorio \texttt{/home/itraf/Host\_shares} de la máquina virtual "original". Para trabjar de forma más cómoda ejecutaremos \texttt{ln -s /mnt/hgfs/Foo /home/itraf/Int\_shares} en cada máquina del escenario de \texttt{GNS3} para lograr lo mismo que hacíamos con el directorio \texttt{Host\_shares} en el párrafo anterior.\\
+
+            Tal y como está montado el escenario ahora basta con mover un archivo a la carpeta \texttt{Int\_shares} en cualquiera de las máquinas lanzadas por \texttt{GNS3} para que éste aparezca en la carpeta \texttt{VMWare\_shares} del sistema operativo anterior. Así podemos extraer los archivos necesarios de una manera sencilla para procesarlos mñás tarde sin tener la monstruosidad de escenario devorando memoria \texttt{RAM} como si no hubiera un mañana.
+
+\end{document}
