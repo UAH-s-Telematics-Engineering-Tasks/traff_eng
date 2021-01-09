@@ -1,0 +1,47 @@
+\documentclass[11pt]{article}
+
+% Handle Spanish seamlessly!
+\usepackage[utf8]{inputenc}
+\usepackage[spanish, es-tabla]{babel}
+
+% Change the language for the captions and default names
+\renewcommand{\figurename}{Figura}
+
+% Needed for the multline environment
+\usepackage{amsmath}
+
+% Images
+\usepackage{graphicx}
+\graphicspath{{Img/}}
+
+\usepackage{geometry}
+\geometry{
+    a4paper,
+    left = 20mm,
+    right = 20mm,
+    top = 15mm,
+    bottom = 15mm
+}
+
+% Links please!
+\usepackage{hyperref}
+
+% Format the links
+\hypersetup{
+    pdfborder = {0 0 0},    % Remove the ugly border
+    colorlinks = true,      % Let there be color
+    citecolor = black,      % Make citations appear normal (i.e black)
+    linkcolor = black,      % The same for links (i.e table of contents)
+    urlcolor = cyan         % Color the web links. (cyan is fancy for blueish...)
+}
+
+
+\title{Reparto de tráfico con routers \texttt{CISCO}}
+\author{Pablo Collado Soto \\ \\ \textit{Ingeniería de Tráfico}}
+\date{}
+
+\begin{document}
+    \maketitle
+
+    \section{Introducción}
+\end{document}
