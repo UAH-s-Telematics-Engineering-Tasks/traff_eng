@@ -119,4 +119,173 @@
                 \label{fig:wfqPrioLoss}
             \end{figure}
 
+    \section{Garantizando una latencia mínima con \textit{WFQ} y vigilancia (2.1.3)}
+        Empleando los mismos flujos que en los apartados anteriores vamos a añadir una ``capa'' de \textit{vigilancia} que se encargará de que el tráfico sobrante del flujo prioritario sea descartado sin importar si las demás colas están vacías o no. Ésto nos podría evitar problemas con el tráfico extra ya que éste entraría en colas que estuvieran vacías en ese momento... Para lograrlo configuraremos una función \textit{policía} en la \textit{clase} asociada al flujo \texttt{1}. Que rechazará el tráfico sobrante por encima de la tasa asignada a dicha \textit{clase}. Como hemos asignado al flujo prioritario un $10\%$ de la capacidad de la interfaz ($V_l = 10\ Mbps$) éste contará con una tasa de $1\ Mbps$. Ésta tasa será la que utilizaremos como límite en la función \textit{policía} que hemos de configurar. Dicha configuración se puede encontrar en la línea \texttt{64} de \href{https://github.com/UAH-s-Telematics-Engineering-Tasks/traff_eng/blob/master/P2/Router_confs/policeWFQ.cfg}{éste} archivo.
+
+        \subsection{Comentando las figuras}
+            Observando la figura \ref{fig:wfqPoliceR} nos damos cuenta de que, a diferencia del caso anterior, la tasa del flujo prioritario se limita prácticamente desde el inicio de la prueba. Al no haber especificado el valor de \texttt{BE}, la cantidad de datos que pueden rebasar la \texttt{CIR} momentáneamente (el tamaño de un cubo de créditos asociado a la función de \textit{policiía}), creemos que un valor por defecto distinto de $0$ puede ser la causa del pico inicial superior a $1\ Mbps$. En cualquier caso, podemos considerar que la tasa está limitada a $1\ Mbps$ durante la duración de la prueba, cosa que diferencia este caso y el anterior totalmente.\\
+
+            Si ahora estudiamos la figura \ref{fig:wfqPoliceLat} veremos que es prácticamente idéntica a la del caso anterior. La única diferencia con el escenario sin función de \textit{policía} es que limitamos la tasa del flujo prioritario desde el principio. No obstante, como el flujo prioritario era ``desalojado'' por los demás hasta que la tasa asociada era la mínima garantizada (el $10\%$) no observamos diferencias en la latencia en ningún caso.\\
+
+            Finalmente podemos analizar las pérdidas de cada flujo en la figura \ref{fig:wfqPoliceLoss}. La diferencia con el caso anterior es que la pérdida de paquetes del flujo prioritario es muy elevada desde el primer instante además de ser constante. La ``simetría'' con la tasa del mismo flujo se aprecia de nuevo al igual que en el caso anterior: como empezamos a descartar tráfico desde prácticamente el principio la tasa es elevada desde ese mismo instante. La relación que existía en el caso anterior se mantiene pero es diferente a este caso porque la evolución de la tasa del flujo prioritario es también diferente al haber aplicado al función \textit{policía}.
+
+            \begin{figure}
+                \centering
+                \includegraphics[width=0.6\linewidth]{wfqPoliceR.png}
+                \caption{Tasa de cada flujo.}
+                \label{fig:wfqPoliceR}
+            \end{figure}
+
+            \begin{figure}
+                \centering
+                \includegraphics[width=0.6\linewidth]{wfqPoliceLat.png}
+                \caption{Latencia de cada flujo.}
+                \label{fig:wfqPoliceLat}
+            \end{figure}
+
+            \begin{figure}
+                \centering
+                \includegraphics[width=0.6\linewidth]{wfqPoliceLoss.png}
+                \caption{Pérdidas de cada flujo.}
+                \label{fig:wfqPoliceLoss}
+            \end{figure}
+
+    \section{Cálculos teóricos sobre un planificador}
+        En esta sección resolvemos el ejercicio con resultados propuesto en el guión. En nuestro caso contamos con un enlace de velocidad $V_l = 10\ Mbps$ y $5\ flujos$ de $2,\ 1,\ 2,\ 3\ y\ 4\ Mbps$ cuya capacidad asignada es $15\%,\ 40\%,\ 10\%,\ 10\%\ y\ 25\%$, respectivamente. Incluimos las tablas \ref{tab:iter1}-\ref{tab:iter3} así como los grupos de ecuaciones \ref{eq:iter1}-\ref{eq:iter3} con cada una de las iteraciones. Los resultados aparecen en la tabla \ref{tab:results}.
+
+        \begin{table}
+            \centering
+            \begin{tabular}{|c|c|c|c|c|}
+                \hline
+                \texttt{Peso (\%)} & \texttt{Tráfico Inicial [Mbps]} & \texttt{C. min. g. [Mbps]} & \texttt{C. Asig. [Mbps]} & \texttt{T. Pend. [Mbps]}\\
+                \hline
+                15 & 2 & 1,5 & 1,5 & 0,5\\
+                \hline
+                40 & 1 & 4 & 1 & 0\\
+                \hline
+                10 & 2 & 1 & 1 & 1\\
+                \hline
+                10 & 3 & 1 & 1 & 2\\
+                \hline
+                25 & 4 & 2,5 & 2,5 & 1,5\\
+                \hline
+            \end{tabular}
+            \caption{Primera iteración.}
+            \label{tab:iter1}
+        \end{table}
+
+        \begin{align} \label{eq:iter1}
+            C_{min_i} &= V_l \cdot \frac{w_i}{\sum_{i = 1}^5 w_i}\\
+            C_{min_1} &= 10\ Mbps \cdot \frac{15}{100} = 1,5\ Mbps\\
+            C_{min_2} &= 10\ Mbps \cdot \frac{40}{100} = 4\ Mbps\\
+            C_{min_3} &= 10\ Mbps \cdot \frac{10}{100} = 1\ Mbps\\
+            C_{min_4} &= 10\ Mbps \cdot \frac{10}{100} = 1\ Mbps\\
+            C_{min_5} &= 10\ Mbps \cdot \frac{25}{100} = 2,5\ Mbps
+        \end{align}
+
+        \begin{table}
+            \centering
+            \begin{tabular}{|c|c|c|c|c|}
+                \hline
+                \texttt{Peso (\%)} & \texttt{T. Pend. I. [Mbps]} & \texttt{C. min. g. [Mbps]} & \texttt{C. Asig. [Mbps]} & \texttt{T. Pend. F. [Mbps]}\\
+                \hline
+                15 & 0,5 & 0,75 & 0,5 & 0\\
+                \hline
+                & 0 & & 0 & 0\\
+                \hline
+                10 & 1 & 0,5 & 0,5 & 0,5\\
+                \hline
+                10 & 2 & 0,5 & 0,5 & 1,5\\
+                \hline
+                25 & 1,5 & 1,25 & 1,25 & 0,25\\
+                \hline
+            \end{tabular}
+            \caption{Segunda iteración.}
+            \label{tab:iter2}
+        \end{table}
+
+        \begin{align} \label{eq:iter2}
+            C_{sobrante} &=  10 - (1,5 + 1 + 1 + 1 + 2,5) = 3\ Mbps\\
+            C_{min_1} &= 3\ Mbps \cdot \frac{15}{60} = 0,75\ Mbps\\
+            C_{min_3} &= 3\ Mbps \cdot \frac{10}{60} = 0,5\ Mbps\\
+            C_{min_4} &= 3\ Mbps \cdot \frac{10}{60} = 0,5\ Mbps\\
+            C_{min_5} &= 3\ Mbps \cdot \frac{25}{60} = 1,25\ Mbps
+        \end{align}
+
+        \begin{table}
+            \centering
+            \begin{tabular}{|c|c|c|c|c|}
+                \hline
+                \texttt{Peso (\%)} & \texttt{T. Pend. I. [Mbps]} & \texttt{C. min. g. [Mbps]} & \texttt{C. Asig. [Mbps]} & \texttt{T. Pend. F. [Mbps]}\\
+                \hline
+                & 0 & & 0 & 0\\
+                \hline
+                & 0 & & 0 & 0\\
+                \hline
+                10 & 0,5 & 0,056 & 0,056 & 0,444\\
+                \hline
+                10 & 1,5 & 0,056 & 0,056 & 1,444\\
+                \hline
+                25 & 0,25 & 0,139 & 0,139 & 0,111\\
+                \hline
+            \end{tabular}
+            \caption{Tercera iteración.}
+            \label{tab:iter3}
+        \end{table}
+
+        \begin{align} \label{eq:iter3}
+            C_{sobrante} &=  3 - (0,5 + 0,5 + 0,5 + 1,25) = 0,25\ Mbps\\
+            C_{min_3} &= 0,25\ Mbps \cdot \frac{10}{45} = 0,056\ Mbps\\
+            C_{min_4} &= 0,25\ Mbps \cdot \frac{10}{45} = 0,056\ Mbps\\
+            C_{min_5} &= 0,25\ Mbps \cdot \frac{25}{45} = 0,139\ Mbps
+        \end{align}
+
+        Con la tercera iteración recogida en la tabla \ref{tab:iter3} terminamos el reparto ya que ninguno de los flujos restantes recibe tanta capacidad como tráfico pendiente. Por lo tanto, el reparto queda:
+
+        \begin{table}
+            \centering
+            \begin{tabular}{|c|c|}
+                \hline
+                \texttt{Flujo} & \texttt{Capacidad asignada [Mbps]}\\
+                \hline
+                1 & $1,5 + 0,5 = 2$\\
+                \hline
+                2 & $1$\\
+                \hline
+                3 & $1 + 0,5 + 0,056 = 1,556$\\
+                \hline
+                4 & $1 + 0,5 + 0,056 = 1,556$\\
+                \hline
+                5 & $2,5 + 1,25 + 0,139 = 3,889$\\
+                \hline
+            \end{tabular}
+            \caption{Resultados tras el reparto.}
+            \label{tab:results}
+        \end{table}
+
+    \section{Cubos con créditos (2.3)}
+        En esta sección estudiamos el conformado de tráfico con un \textit{cubo de créditos} para después aplicar una función \textit{policía}.
+
+        \subsection{Prueba de conformado (2.3.1)}
+            Incluimos la entrada de la ráfaga descrita en esta sección y la siguiente, así como la salida esperada para el \textit{cubo de créditos} en las figuras \ref{fig:inputBucks} y \ref{fig:outputBucks}, respectivamente.\\
+
+            \begin{figure}
+                \centering
+                \includegraphics[width=0.6\linewidth]{tokenBucketsInput.png}
+                \caption{Entrada de ambos sistemas.}
+                \label{fig:inputBucks}
+            \end{figure}
+
+            \begin{figure}
+                \centering
+                \includegraphics[width=0.6\linewidth]{tokenBucketsOutput.png}
+                \caption{Salida esperada del \textit{cubo de créditos}.}
+                \label{fig:outputBucks}
+            \end{figure}
+
+            La configuración del encaminador se incluye en \href{https://github.com/UAH-s-Telematics-Engineering-Tasks/traff_eng/blob/master/P2/Router_confs/tokenBucket.cfg}{éste} archivo. Como la prueba solo contiene un flujo empleamos la clase por defecto del encaminador para facilitar la sintaxis de configuración.\\
+
+            Incluimos la tasa de salida de la ráfaga conformada en la figura \ref{fig:tokenBucketR}. Esperamos que la tasa caiga hasta la velocidad media en $t = 1,5\ s$ pero dado que la granularidad de \texttt{trpr} es de $1\ s$ veremos la caída en $t = 1\ s$
+
+
 \end{document}
