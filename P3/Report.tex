@@ -138,5 +138,22 @@
                 \end{figure}
 
             \subsection{Prueba con reparto de tráfico por paquete (PP)}
+                Al activar el reparto de tráfico en ambos enlaces veremos cómo se incrementan las tasas que observamos en las gráficas de las figuras \ref{fig:udpTraffPPR} y \ref{fig:tcpTraffPPR}. Teóricamente deberíamos obtener gráficas escaladas por un factor próximo a $2$ respecto a las de las figuras \ref{fig:udpTraffNoBalancingR} y \ref{fig:tcpTraffNoBalancingR} ya que \texttt{R1} ahora hará uso de los dos ``caminos'' que componen el rombo del centro de la topología. El perfil del tráfico en sí es muy parecido al que vemos en la sección anterior pero las tasas son más altas al poder hacer uso de dos enlaces en vez de uno. No obstante, la tasa de la que hacemos uso es de $2 \cdot 10\ Mbps = 20\ Mbps < 22\ Mbps$ con lo que el flujo \texttt{UDP} sigue estando sujeto a pérdidas, aunque estas son claramente menores que en el caso anterior.
+
+                \begin{figure}
+                    \centering
+                    \includegraphics[width=0.6\linewidth]{udpTraffPPR.png}
+                    \caption{Tasa del flujo \texttt{UDP} con reparto de tráfico por paquete.}
+                    \label{fig:udpTraffPPR}
+                \end{figure}
+
+                \begin{figure}
+                    \centering
+                    \includegraphics[width=0.6\linewidth]{tcpTraffPPR.png}
+                    \caption{Tasa del flujo \texttt{TCP} con reparto de tráfico por paquete.}
+                    \label{fig:tcpTraffPPR}
+                \end{figure}
+
+            \subsection{Prueba con reparto de tráfico por paquete y retardo}
                 
 \end{document}
