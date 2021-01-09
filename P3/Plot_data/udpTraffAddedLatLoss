@@ -1,0 +1,17 @@
+set title " udpTraffLoss"
+set xlabel 'Time (sec)'
+set ylabel 'Loss Fraction'
+set style data lines
+set yrange[-0.100000:1.100000]
+set key bottom right
+plot \
+'-' using 1:2 t 'UDP,::ffff:10.1.0.1/2000->10.1.5.1/5001~1'
+
+# Flow: UDP,::ffff:10.1.0.1/2000->10.1.5.1/5001~1
+0.000000, 0.441292
+1.011028, 0.441292
+1.011028, 0.456678
+2.016303, 0.456678
+2.016303, 0.119000
+2.550351, 0.119000
+e

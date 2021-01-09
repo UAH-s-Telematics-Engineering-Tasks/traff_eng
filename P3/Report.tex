@@ -138,7 +138,7 @@
                 \end{figure}
 
             \subsection{Prueba con reparto de tráfico por paquete (PP)}
-                Al activar el reparto de tráfico en ambos enlaces veremos cómo se incrementan las tasas que observamos en las gráficas de las figuras \ref{fig:udpTraffPPR} y \ref{fig:tcpTraffPPR}. Teóricamente deberíamos obtener gráficas escaladas por un factor próximo a $2$ respecto a las de las figuras \ref{fig:udpTraffNoBalancingR} y \ref{fig:tcpTraffNoBalancingR} ya que \texttt{R1} ahora hará uso de los dos ``caminos'' que componen el rombo del centro de la topología. El perfil del tráfico en sí es muy parecido al que vemos en la sección anterior pero las tasas son más altas al poder hacer uso de dos enlaces en vez de uno. No obstante, la tasa de la que hacemos uso es de $2 \cdot 10\ Mbps = 20\ Mbps < 22\ Mbps$ con lo que el flujo \texttt{UDP} sigue estando sujeto a pérdidas, aunque estas son claramente menores que en el caso anterior.
+                Al activar el reparto de tráfico en ambos enlaces veremos cómo se incrementan las tasas que observamos en las gráficas de las figuras \ref{fig:udpTraffPPR} y \ref{fig:tcpTraffPPR}. Teóricamente deberíamos obtener gráficas escaladas por un factor próximo a $2$ respecto a las de las figuras \ref{fig:udpTraffNoBalancingR} y \ref{fig:tcpTraffNoBalancingR} ya que \texttt{R1} ahora hará uso de los dos ``caminos'' que componen el rombo del centro de la topología. El perfil del tráfico en sí es muy parecido al que vemos en la sección anterior pero las tasas son más altas al poder hacer uso de dos enlaces en vez de uno. No obstante, la tasa de la que hacemos uso es de $2 \cdot 10\ Mbps = 20\ Mbps < 22\ Mbps$ con lo que el flujo \texttt{UDP} sigue estando sujeto a pérdidas, aunque estas son claramente menores que en el caso anterior. Esto conlleva a que se entregue mucho más tráfico (el área de la gráfica es mayor) que en el escenario previo.
 
                 \begin{figure}
                     \centering
@@ -155,5 +155,26 @@
                 \end{figure}
 
             \subsection{Prueba con reparto de tráfico por paquete y retardo}
-                
+                En este caso añadimos un retardo adicional de $5\ ms$ a uno de los ``caminos'' del rombo. Veremos que esto hará que la latencia sea distinta en cada uno de los tramos y, dado que empleamos un reparto por paquete, se irá alternando con cada uno de ellos. En el caso de \texttt{UDP} esto se manifiesta en que se rebaja la tasa de llegada en la figura \ref{fig:udpTraffAddedLatR} (uno de los caminos tarda $5\ ms$ más en empezar a entregar datos) y en dos niveles de latencia diferentes en la figura \ref{fig:udpTraffAddedLatLat}. En el caso de \texttt{TCP} veremos que en la figura \ref{fig:tcpTraffAddedLatR} el tiempo que se tarda en recibir todos los datos se incrementa considerablemente ya que cada uno de los paquetes que tome la ruta artificialmente lenta llegará fuera de secuencia, cosa que retrasará la entrega de los paquetes que lleguen por el camino rápido. De esta manera, el retardo de $5\ ms$ se está aplicando a todo el flujo mientras que solo se aplica a la ``mitad'' en el caso de \texttt{UDP}.
+
+                \begin{figure}
+                    \centering
+                    \includegraphics[width=0.6\linewidth]{udpTraffAddedLatR.png}
+                    \caption{Tasa del flujo \texttt{UDP} con reparto de tráfico por paquete y latencia añadida.}
+                    \label{fig:udpTraffAddedLatR}
+                \end{figure}
+
+                \begin{figure}
+                    \centering
+                    \includegraphics[width=0.6\linewidth]{udpTraffAddedLatLat.png}
+                    \caption{Latencia del flujo \texttt{UDP} con reparto de tráfico por paquete y latencia añadida.}
+                    \label{fig:udpTraffAddedLatLat}
+                \end{figure}
+
+                \begin{figure}
+                    \centering
+                    \includegraphics[width=0.6\linewidth]{tcpTraffAddedLatR.png}
+                    \caption{Tasa del flujo \texttt{TCP} con reparto de tráfico por paquete y latencia añadida.}
+                    \label{fig:tcpTraffAddedLatR}
+                \end{figure}
 \end{document}
