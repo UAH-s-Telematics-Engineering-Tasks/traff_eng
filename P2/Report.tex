@@ -285,7 +285,41 @@
 
             La configuración del encaminador se incluye en \href{https://github.com/UAH-s-Telematics-Engineering-Tasks/traff_eng/blob/master/P2/Router_confs/tokenBucket.cfg}{éste} archivo. Como la prueba solo contiene un flujo empleamos la clase por defecto del encaminador para facilitar la sintaxis de configuración.\\
 
-            Incluimos la tasa de salida de la ráfaga conformada en la figura \ref{fig:tokenBucketR}. Esperamos que la tasa caiga hasta la velocidad media en $t = 1,5\ s$ pero dado que la granularidad de \texttt{trpr} es de $1\ s$ veremos la caída en $t = 1\ s$
+            Incluimos la tasa de salida de la ráfaga conformada en la figura \ref{fig:tokenBucketR}. Esperamos que la tasa caiga hasta la velocidad media en $t = 1,5\ s$ pero dado que la granularidad de \texttt{trpr} es de $1\ s$ veremos la caída en $t = 2\ s$. Asimismo, observamos que se introduce un retardo que ``estira'' la ráfaga de entrada hasta la marca de los $9\ s$. Si observamos la gráfica de la latencia en la figura \ref{fig:tokenBucketLat} veremos que ésta empieza a crecer una vez que se vacía el cubo de créditos en $t = 1,5\ s$. Al igual que antes, no veremos ésto reflejado en la gráfica hasta $t = 2\ s$. Asimismo, vemos que esta latencia se ``aplana'' en un valor de $2\ s$, retardo que esperábamos tal y como recoge la teoría. Al comparar este conformado con la sección siguiente observaremos que el hecho de descartar el tráfico en exceso en vez de almacenarlo en un buffer para luego extraerlo incrementará las pérdidas pero la latencia permanecerá constante. Reseñamos que el valor del buffer de datos de entrada real es prácticamente igual a $640\ kb$ ya que los cálculos teóricos y los resultados generados son bastante parecidos. Además, la granularidad tan poco exacta de \texttt{trpr} así como la variabilidad intrínseca al proceso de simulación dificultan tremendamente poder hacer cálculos exactos.
 
+            \begin{figure}
+                \centering
+                \includegraphics[width=0.6\linewidth]{tokenBucketR.png}
+                \caption{Tasa del flujo a la salida del conformador.}
+                \label{fig:tokenBucketR}
+            \end{figure}
 
+            \begin{figure}
+                \centering
+                \includegraphics[width=0.6\linewidth]{tokenBucketLat.png}
+                \caption{Latencia del flujo a la salida del conformador.}
+                \label{fig:tokenBucketLat}
+            \end{figure}
+
+        \subsection{Prueba con función policía (2.3.2)}
+            Al igual que antes incluimos las gráficas con la tasa del flujo tras aplicar la función policía así como la latencia en las figuras \ref{fig:policeBucketR} y \ref{fig:policeBucketLat}, respectivamente. La configuración del encaminador para este apartado se encuentra en \href{https://github.com/UAH-s-Telematics-Engineering-Tasks/traff_eng/blob/master/P2/Router_confs/policeBucket.cfg}{éste} archivo.
+
+            \begin{figure}
+                \centering
+                \includegraphics[width=0.6\linewidth]{policeBucketR.png}
+                \caption{Tasa del flujo a la salida de la función policía.}
+                \label{fig:policeBucketR}
+            \end{figure}
+
+            \begin{figure}
+                \centering
+                \includegraphics[width=0.6\linewidth]{policeBucketLat.png}
+                \caption{Latencia del flujo a la salida de la función policía.}
+                \label{fig:policeBucketLat}
+            \end{figure}
+
+            En la figura \ref{fig:policeBucketR} observamos que la ráfaga no acaba en $t = 9\ s$ sino que lo hace a los $7$ segundos ya que no almacenamos una cantidad de datos igual al buffer de datos ($C_D$) para luego transmitirlos: directamente descartamos ese exceso. Ésto se traduce en una latencia prácticamente constante tal y como se refleja en la figura \ref{fig:policeBucketLat}. La comparación entre ambas técnicas ya se llevó a cabo en la sección anterior, pero se resume en que al descartar el tráfico no se introduce una latencia adicional en la función policía.
+
+    \section{Conclusión}
+            Tal y como se ve en la práctica hemos aprendido a configurar y analizar el comportamiento del algoritmo \textit{WFQ} así como de dos técnicas de conformado.
 \end{document}
