@@ -114,4 +114,29 @@
             \end{figure}
 
     \section{Reparto con routers reales}
+            Tal y como se indica en el guión de la práctica ahora vamos a generar tráfico con \texttt{mgen} y estudiar las gráficas que obtenemos. ASumiremos que el equipo que genera tráfico es \texttt{SRC} y el que lo recibe será \texttt{DST}.
+
+            \subsection{Prueba sin reparto de tráfico}
+                En este caso veremos que todo el tráfico que enviemos desde \texttt{SRC} a \texttt{DST} seguirá la misma ruta a través del ``rombo'' en mitad de la topología. Como los enlaces de dicho rombo están limitados a $10\ Mbps$ veremos cómo esta es la cota superior de la velocidad para ambos protocolos de transporte. En el caso de \texttt{UDP}, tal y como se ve en la figura \ref{fig:udpTraffNoBalancingR}, esta tasa de $10\ Mbps$ se mantendrá durante los $2\ s$ que dura el flujo. Como la tasa del enlace por el que se desaloja el tráfico es menor que la tasa del flujo ($22\ Mbps$) la cola de salida asociada a esta interfaz se irá llenando hasta provocar el descarte de paquetes. Tras finalizar el flujo se vaciará esta cola, cosa que explica la tasa no nula entre los segundos $2$ y $3$ donde el \texttt{SRC} ya no está emitiendo ningún tráfico. Podemos corroborar nuestras sospechas viendo que la latencia se satura rápidamente y que la tasa de pérdidas es prácticamente constante en todo momento ya que muchos de los paquetes emitidos por \texttt{SRC} se encuentran una cola llena.\\
+
+                En el caso de \texttt{TCP}, tal y como vemos en la figura \ref{fig:tcpTraffNoBalancingR}, la tasa se comporta de manera parecida a la de \texttt{UDP}. La principal diferencia radica en que el intervalo de tiempo en el que mantenemos una tasa de $10\ Mbps$ es mayor ya que la propia operativa del protocolo ``alarga'' la ráfaga de tráfico para garantizar que llegue al receptor en su totalidad. Es por ello que observamos una tasa de pérdidas nula tal y como garantiza \texttt{TCP} por diseño.\\
+
+                En definitiva vemos que a grandes rasgos la tasa del flujo se limita a $10\ Mbps$ por los enlaces que conforman el rombo de la topología. Debido a este hecho, \texttt{UDP} perderá tráfico pero su ráfaga acabará ``a tiempo'' mientras que \texttt{TCP} transmite todo el tráfico, pero lo hace en un tiempo no predecible \textit{a priori}.
+
+                \begin{figure}
+                    \centering
+                    \includegraphics[width=0.6\linewidth]{udpTraffNoBalancingR.png}
+                    \caption{Tasa del flujo \texttt{UDP} sin reparto de tráfico.}
+                    \label{fig:udpTraffNoBalancingR}
+                \end{figure}
+
+                \begin{figure}
+                    \centering
+                    \includegraphics[width=0.6\linewidth]{tcpTraffNoBalancingR.png}
+                    \caption{Tasa del flujo \texttt{TCP} sin reparto de tráfico.}
+                    \label{fig:tcpTraffNoBalancingR}
+                \end{figure}
+
+            \subsection{Prueba con reparto de tráfico por paquete (PP)}
+                
 \end{document}
