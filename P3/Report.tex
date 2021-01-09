@@ -177,4 +177,24 @@
                     \caption{Tasa del flujo \texttt{TCP} con reparto de tráfico por paquete y latencia añadida.}
                     \label{fig:tcpTraffAddedLatR}
                 \end{figure}
+
+            \subsection{Prueba con reparto por paquete y congestión}
+                En este caso limitaremos la tasa de uno de los caminos a $5\ Mbps$ artificialmente. En el caso de \texttt{UDP} veremos que la tasa que obtenemos es mayor que en el caso en el que no se aplica reparto de tráfico pero menor que cuando el sistema no estaba congestionado tal y como se aprecia en la figura \ref{fig:udpTraffCongR}. Esto se debe a que uno de los ``caminos'' tiene una menor tasa, lo que implica que en \texttt{R2} se formará otra nueva cola y que la tasa máxima a la que aspiremos sea de unos $15\ Mbps$ sumando las de ambos ``caminos''. En el caso de \texttt{TCP} observaremos una tasa menor que la que teníamos en el escenario sin reparto de tráfico tal y como se aprecia en la figura \ref{fig:tcpTraffCongR}. Ésto creemos que se debe a que para evitar la congestión que se produce en \texttt{R2} \texttt{TCP} controla la tasa de emisión a fin de no incrementar las pérdidas de manera desmesurada. Además, el hecho de que algunos paquetes se pierdan en \texttt{R2} provocará que paquetes que alcancen \texttt{DST} deban esperar a la retransmisión de las pérdidas para ser entegados.
+
+                \begin{figure}
+                    \centering
+                    \includegraphics[width=0.6\linewidth]{udpTraffCongR.png}
+                    \caption{Tasa del flujo \texttt{UDP} con reparto de tráfico por paquete y congestión.}
+                    \label{fig:udpTraffCongR}
+                \end{figure}
+
+                \begin{figure}
+                    \centering
+                    \includegraphics[width=0.6\linewidth]{tcpTraffCongR.png}
+                    \caption{Tasa del flujo \texttt{TCP} con reparto de tráfico por paquete y congestión.}
+                    \label{fig:tcpTraffCongR}
+                \end{figure}
+
+            \subsection{Tiempo de recuperación con reparto por destino (PD)}
+                
 \end{document}
