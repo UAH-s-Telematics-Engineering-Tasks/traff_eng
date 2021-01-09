@@ -114,87 +114,94 @@
             \end{figure}
 
     \section{Reparto con routers reales}
-            Tal y como se indica en el guión de la práctica ahora vamos a generar tráfico con \texttt{mgen} y estudiar las gráficas que obtenemos. ASumiremos que el equipo que genera tráfico es \texttt{SRC} y el que lo recibe será \texttt{DST}.
+        Tal y como se indica en el guión de la práctica ahora vamos a generar tráfico con \texttt{mgen} y estudiar las gráficas que obtenemos. ASumiremos que el equipo que genera tráfico es \texttt{SRC} y el que lo recibe será \texttt{DST}.
 
-            \subsection{Prueba sin reparto de tráfico}
-                En este caso veremos que todo el tráfico que enviemos desde \texttt{SRC} a \texttt{DST} seguirá la misma ruta a través del ``rombo'' en mitad de la topología. Como los enlaces de dicho rombo están limitados a $10\ Mbps$ veremos cómo esta es la cota superior de la velocidad para ambos protocolos de transporte. En el caso de \texttt{UDP}, tal y como se ve en la figura \ref{fig:udpTraffNoBalancingR}, esta tasa de $10\ Mbps$ se mantendrá durante los $2\ s$ que dura el flujo. Como la tasa del enlace por el que se desaloja el tráfico es menor que la tasa del flujo ($22\ Mbps$) la cola de salida asociada a esta interfaz se irá llenando hasta provocar el descarte de paquetes. Tras finalizar el flujo se vaciará esta cola, cosa que explica la tasa no nula entre los segundos $2$ y $3$ donde el \texttt{SRC} ya no está emitiendo ningún tráfico. Podemos corroborar nuestras sospechas viendo que la latencia se satura rápidamente y que la tasa de pérdidas es prácticamente constante en todo momento ya que muchos de los paquetes emitidos por \texttt{SRC} se encuentran una cola llena.\\
+        \subsection{Prueba sin reparto de tráfico}
+            En este caso veremos que todo el tráfico que enviemos desde \texttt{SRC} a \texttt{DST} seguirá la misma ruta a través del ``rombo'' en mitad de la topología. Como los enlaces de dicho rombo están limitados a $10\ Mbps$ veremos cómo esta es la cota superior de la velocidad para ambos protocolos de transporte. En el caso de \texttt{UDP}, tal y como se ve en la figura \ref{fig:udpTraffNoBalancingR}, esta tasa de $10\ Mbps$ se mantendrá durante los $2\ s$ que dura el flujo. Como la tasa del enlace por el que se desaloja el tráfico es menor que la tasa del flujo ($22\ Mbps$) la cola de salida asociada a esta interfaz se irá llenando hasta provocar el descarte de paquetes. Tras finalizar el flujo se vaciará esta cola, cosa que explica la tasa no nula entre los segundos $2$ y $3$ donde el \texttt{SRC} ya no está emitiendo ningún tráfico. Podemos corroborar nuestras sospechas viendo que la latencia se satura rápidamente y que la tasa de pérdidas es prácticamente constante en todo momento ya que muchos de los paquetes emitidos por \texttt{SRC} se encuentran una cola llena.\\
 
-                En el caso de \texttt{TCP}, tal y como vemos en la figura \ref{fig:tcpTraffNoBalancingR}, la tasa se comporta de manera parecida a la de \texttt{UDP}. La principal diferencia radica en que el intervalo de tiempo en el que mantenemos una tasa de $10\ Mbps$ es mayor ya que la propia operativa del protocolo ``alarga'' la ráfaga de tráfico para garantizar que llegue al receptor en su totalidad. Es por ello que observamos una tasa de pérdidas nula tal y como garantiza \texttt{TCP} por diseño.\\
+            En el caso de \texttt{TCP}, tal y como vemos en la figura \ref{fig:tcpTraffNoBalancingR}, la tasa se comporta de manera parecida a la de \texttt{UDP}. La principal diferencia radica en que el intervalo de tiempo en el que mantenemos una tasa de $10\ Mbps$ es mayor ya que la propia operativa del protocolo ``alarga'' la ráfaga de tráfico para garantizar que llegue al receptor en su totalidad. Es por ello que observamos una tasa de pérdidas nula tal y como garantiza \texttt{TCP} por diseño.\\
 
-                En definitiva vemos que a grandes rasgos la tasa del flujo se limita a $10\ Mbps$ por los enlaces que conforman el rombo de la topología. Debido a este hecho, \texttt{UDP} perderá tráfico pero su ráfaga acabará ``a tiempo'' mientras que \texttt{TCP} transmite todo el tráfico, pero lo hace en un tiempo no predecible \textit{a priori}.
+            En definitiva vemos que a grandes rasgos la tasa del flujo se limita a $10\ Mbps$ por los enlaces que conforman el rombo de la topología. Debido a este hecho, \texttt{UDP} perderá tráfico pero su ráfaga acabará ``a tiempo'' mientras que \texttt{TCP} transmite todo el tráfico, pero lo hace en un tiempo no predecible \textit{a priori}.
 
-                \begin{figure}
-                    \centering
-                    \includegraphics[width=0.6\linewidth]{udpTraffNoBalancingR.png}
-                    \caption{Tasa del flujo \texttt{UDP} sin reparto de tráfico.}
-                    \label{fig:udpTraffNoBalancingR}
-                \end{figure}
+            \begin{figure}
+                \centering
+                \includegraphics[width=0.6\linewidth]{udpTraffNoBalancingR.png}
+                \caption{Tasa del flujo \texttt{UDP} sin reparto de tráfico.}
+                \label{fig:udpTraffNoBalancingR}
+            \end{figure}
 
-                \begin{figure}
-                    \centering
-                    \includegraphics[width=0.6\linewidth]{tcpTraffNoBalancingR.png}
-                    \caption{Tasa del flujo \texttt{TCP} sin reparto de tráfico.}
-                    \label{fig:tcpTraffNoBalancingR}
-                \end{figure}
+            \begin{figure}
+                \centering
+                \includegraphics[width=0.6\linewidth]{tcpTraffNoBalancingR.png}
+                \caption{Tasa del flujo \texttt{TCP} sin reparto de tráfico.}
+                \label{fig:tcpTraffNoBalancingR}
+            \end{figure}
 
-            \subsection{Prueba con reparto de tráfico por paquete (PP)}
-                Al activar el reparto de tráfico en ambos enlaces veremos cómo se incrementan las tasas que observamos en las gráficas de las figuras \ref{fig:udpTraffPPR} y \ref{fig:tcpTraffPPR}. Teóricamente deberíamos obtener gráficas escaladas por un factor próximo a $2$ respecto a las de las figuras \ref{fig:udpTraffNoBalancingR} y \ref{fig:tcpTraffNoBalancingR} ya que \texttt{R1} ahora hará uso de los dos ``caminos'' que componen el rombo del centro de la topología. El perfil del tráfico en sí es muy parecido al que vemos en la sección anterior pero las tasas son más altas al poder hacer uso de dos enlaces en vez de uno. No obstante, la tasa de la que hacemos uso es de $2 \cdot 10\ Mbps = 20\ Mbps < 22\ Mbps$ con lo que el flujo \texttt{UDP} sigue estando sujeto a pérdidas, aunque estas son claramente menores que en el caso anterior. Esto conlleva a que se entregue mucho más tráfico (el área de la gráfica es mayor) que en el escenario previo.
+        \subsection{Prueba con reparto de tráfico por paquete (PP)}
+            Al activar el reparto de tráfico en ambos enlaces veremos cómo se incrementan las tasas que observamos en las gráficas de las figuras \ref{fig:udpTraffPPR} y \ref{fig:tcpTraffPPR}. Teóricamente deberíamos obtener gráficas escaladas por un factor próximo a $2$ respecto a las de las figuras \ref{fig:udpTraffNoBalancingR} y \ref{fig:tcpTraffNoBalancingR} ya que \texttt{R1} ahora hará uso de los dos ``caminos'' que componen el rombo del centro de la topología. El perfil del tráfico en sí es muy parecido al que vemos en la sección anterior pero las tasas son más altas al poder hacer uso de dos enlaces en vez de uno. No obstante, la tasa de la que hacemos uso es de $2 \cdot 10\ Mbps = 20\ Mbps < 22\ Mbps$ con lo que el flujo \texttt{UDP} sigue estando sujeto a pérdidas, aunque estas son claramente menores que en el caso anterior. Esto conlleva a que se entregue mucho más tráfico (el área de la gráfica es mayor) que en el escenario previo.
 
-                \begin{figure}
-                    \centering
-                    \includegraphics[width=0.6\linewidth]{udpTraffPPR.png}
-                    \caption{Tasa del flujo \texttt{UDP} con reparto de tráfico por paquete.}
-                    \label{fig:udpTraffPPR}
-                \end{figure}
+            \begin{figure}
+                \centering
+                \includegraphics[width=0.6\linewidth]{udpTraffPPR.png}
+                \caption{Tasa del flujo \texttt{UDP} con reparto de tráfico por paquete.}
+                \label{fig:udpTraffPPR}
+            \end{figure}
 
-                \begin{figure}
-                    \centering
-                    \includegraphics[width=0.6\linewidth]{tcpTraffPPR.png}
-                    \caption{Tasa del flujo \texttt{TCP} con reparto de tráfico por paquete.}
-                    \label{fig:tcpTraffPPR}
-                \end{figure}
+            \begin{figure}
+                \centering
+                \includegraphics[width=0.6\linewidth]{tcpTraffPPR.png}
+                \caption{Tasa del flujo \texttt{TCP} con reparto de tráfico por paquete.}
+                \label{fig:tcpTraffPPR}
+            \end{figure}
 
-            \subsection{Prueba con reparto de tráfico por paquete y retardo}
-                En este caso añadimos un retardo adicional de $5\ ms$ a uno de los ``caminos'' del rombo. Veremos que esto hará que la latencia sea distinta en cada uno de los tramos y, dado que empleamos un reparto por paquete, se irá alternando con cada uno de ellos. En el caso de \texttt{UDP} esto se manifiesta en que se rebaja la tasa de llegada en la figura \ref{fig:udpTraffAddedLatR} (uno de los caminos tarda $5\ ms$ más en empezar a entregar datos) y en dos niveles de latencia diferentes en la figura \ref{fig:udpTraffAddedLatLat}. En el caso de \texttt{TCP} veremos que en la figura \ref{fig:tcpTraffAddedLatR} el tiempo que se tarda en recibir todos los datos se incrementa considerablemente ya que cada uno de los paquetes que tome la ruta artificialmente lenta llegará fuera de secuencia, cosa que retrasará la entrega de los paquetes que lleguen por el camino rápido. De esta manera, el retardo de $5\ ms$ se está aplicando a todo el flujo mientras que solo se aplica a la ``mitad'' en el caso de \texttt{UDP}.
+        \subsection{Prueba con reparto de tráfico por paquete y retardo}
+            En este caso añadimos un retardo adicional de $5\ ms$ a uno de los ``caminos'' del rombo. Veremos que esto hará que la latencia sea distinta en cada uno de los tramos y, dado que empleamos un reparto por paquete, se irá alternando con cada uno de ellos. En el caso de \texttt{UDP} esto se manifiesta en que se rebaja la tasa de llegada en la figura \ref{fig:udpTraffAddedLatR} (uno de los caminos tarda $5\ ms$ más en empezar a entregar datos) y en dos niveles de latencia diferentes en la figura \ref{fig:udpTraffAddedLatLat}. En el caso de \texttt{TCP} veremos que en la figura \ref{fig:tcpTraffAddedLatR} el tiempo que se tarda en recibir todos los datos se incrementa considerablemente ya que cada uno de los paquetes que tome la ruta artificialmente lenta llegará fuera de secuencia, cosa que retrasará la entrega de los paquetes que lleguen por el camino rápido. De esta manera, el retardo de $5\ ms$ se está aplicando a todo el flujo mientras que solo se aplica a la ``mitad'' en el caso de \texttt{UDP}.
 
-                \begin{figure}
-                    \centering
-                    \includegraphics[width=0.6\linewidth]{udpTraffAddedLatR.png}
-                    \caption{Tasa del flujo \texttt{UDP} con reparto de tráfico por paquete y latencia añadida.}
-                    \label{fig:udpTraffAddedLatR}
-                \end{figure}
+            \begin{figure}
+                \centering
+                \includegraphics[width=0.6\linewidth]{udpTraffAddedLatR.png}
+                \caption{Tasa del flujo \texttt{UDP} con reparto de tráfico por paquete y latencia añadida.}
+                \label{fig:udpTraffAddedLatR}
+            \end{figure}
 
-                \begin{figure}
-                    \centering
-                    \includegraphics[width=0.6\linewidth]{udpTraffAddedLatLat.png}
-                    \caption{Latencia del flujo \texttt{UDP} con reparto de tráfico por paquete y latencia añadida.}
-                    \label{fig:udpTraffAddedLatLat}
-                \end{figure}
+            \begin{figure}
+                \centering
+                \includegraphics[width=0.6\linewidth]{udpTraffAddedLatLat.png}
+                \caption{Latencia del flujo \texttt{UDP} con reparto de tráfico por paquete y latencia añadida.}
+                \label{fig:udpTraffAddedLatLat}
+            \end{figure}
 
-                \begin{figure}
-                    \centering
-                    \includegraphics[width=0.6\linewidth]{tcpTraffAddedLatR.png}
-                    \caption{Tasa del flujo \texttt{TCP} con reparto de tráfico por paquete y latencia añadida.}
-                    \label{fig:tcpTraffAddedLatR}
-                \end{figure}
+            \begin{figure}
+                \centering
+                \includegraphics[width=0.6\linewidth]{tcpTraffAddedLatR.png}
+                \caption{Tasa del flujo \texttt{TCP} con reparto de tráfico por paquete y latencia añadida.}
+                \label{fig:tcpTraffAddedLatR}
+            \end{figure}
 
-            \subsection{Prueba con reparto por paquete y congestión}
-                En este caso limitaremos la tasa de uno de los caminos a $5\ Mbps$ artificialmente. En el caso de \texttt{UDP} veremos que la tasa que obtenemos es mayor que en el caso en el que no se aplica reparto de tráfico pero menor que cuando el sistema no estaba congestionado tal y como se aprecia en la figura \ref{fig:udpTraffCongR}. Esto se debe a que uno de los ``caminos'' tiene una menor tasa, lo que implica que en \texttt{R2} se formará otra nueva cola y que la tasa máxima a la que aspiremos sea de unos $15\ Mbps$ sumando las de ambos ``caminos''. En el caso de \texttt{TCP} observaremos una tasa menor que la que teníamos en el escenario sin reparto de tráfico tal y como se aprecia en la figura \ref{fig:tcpTraffCongR}. Ésto creemos que se debe a que para evitar la congestión que se produce en \texttt{R2} \texttt{TCP} controla la tasa de emisión a fin de no incrementar las pérdidas de manera desmesurada. Además, el hecho de que algunos paquetes se pierdan en \texttt{R2} provocará que paquetes que alcancen \texttt{DST} deban esperar a la retransmisión de las pérdidas para ser entegados.
+        \subsection{Prueba con reparto por paquete y congestión}
+            En este caso limitaremos la tasa de uno de los caminos a $5\ Mbps$ artificialmente. En el caso de \texttt{UDP} veremos que la tasa que obtenemos es mayor que en el caso en el que no se aplica reparto de tráfico pero menor que cuando el sistema no estaba congestionado tal y como se aprecia en la figura \ref{fig:udpTraffCongR}. Esto se debe a que uno de los ``caminos'' tiene una menor tasa, lo que implica que en \texttt{R2} se formará otra nueva cola y que la tasa máxima a la que aspiremos sea de unos $15\ Mbps$ sumando las de ambos ``caminos''. En el caso de \texttt{TCP} observaremos una tasa menor que la que teníamos en el escenario sin reparto de tráfico tal y como se aprecia en la figura \ref{fig:tcpTraffCongR}. Ésto creemos que se debe a que para evitar la congestión que se produce en \texttt{R2} \texttt{TCP} controla la tasa de emisión a fin de no incrementar las pérdidas de manera desmesurada. Además, el hecho de que algunos paquetes se pierdan en \texttt{R2} provocará que paquetes que alcancen \texttt{DST} deban esperar a la retransmisión de las pérdidas para ser entegados.
 
-                \begin{figure}
-                    \centering
-                    \includegraphics[width=0.6\linewidth]{udpTraffCongR.png}
-                    \caption{Tasa del flujo \texttt{UDP} con reparto de tráfico por paquete y congestión.}
-                    \label{fig:udpTraffCongR}
-                \end{figure}
+            \begin{figure}
+                \centering
+                \includegraphics[width=0.6\linewidth]{udpTraffCongR.png}
+                \caption{Tasa del flujo \texttt{UDP} con reparto de tráfico por paquete y congestión.}
+                \label{fig:udpTraffCongR}
+            \end{figure}
 
-                \begin{figure}
-                    \centering
-                    \includegraphics[width=0.6\linewidth]{tcpTraffCongR.png}
-                    \caption{Tasa del flujo \texttt{TCP} con reparto de tráfico por paquete y congestión.}
-                    \label{fig:tcpTraffCongR}
-                \end{figure}
+            \begin{figure}
+                \centering
+                \includegraphics[width=0.6\linewidth]{tcpTraffCongR.png}
+                \caption{Tasa del flujo \texttt{TCP} con reparto de tráfico por paquete y congestión.}
+                \label{fig:tcpTraffCongR}
+            \end{figure}
 
-            \subsection{Tiempo de recuperación con reparto por destino (PD)}
-                
+        \subsection{Tiempo de recuperación con reparto por destino (PD)}
+            Para realizar esta prueba hemos empleado las \texttt{TTY}s del ofrecidas por el \textit{Ubuntu Server} que ejecuta \texttt{SRC}. Para cambiar a la segunda consola tan solo hay que pulsar \texttt{ALT + F2} y podemos llevar a cabo la prueba sin problema. Además, hemos reconfigurado \texttt{R2} para que vuelva a limitar la velocidad a $10\ Mbps$ como hacia originalmente.\\
+
+            Al aplicar el reparto de tráfico por destino veremos que cada \texttt{ping} coge una ruta distinta por el rombo ya que ambas tienen igual coste. Así, cuando se suspende un enlace provocaremos que una de las rutas quede inutilizada. No obstante, si observamos la tabla de encaminamiento de \texttt{R1} con \texttt{show ip route} veremos que la desaparición de una de las rutas tarda en propagarse un tiempo por la propia operativa de \texttt{OSPF}, el protocolo de encaminamiento que ha descubierto la ruta hasta la subred \texttt{10.1.5.0/24}. Por tanto, el tiempo de recuperación equivale al tiempo que tarda el proceso que implementa \texttt{OSPF} en \texttt{R1} en darse cuenta de que una de las rutas no está disponible. En este instante no tiene cabida el reparto de tráfico y ambos\texttt{ping}s irán por la misma ruta. Nosotros hemos observado que ésto toma unos $45\ s$ para ocurrir en nuestro equipo y que este tiempo es prácticamente idéntico sin importar si suspendemos el enlace \texttt{R2-R4} o el \texttt{R1-R2}. Podemos señalar que al suspender el segundo, observamos un mensaje en la consola de \texttt{R1} que alude a que expira un \textit{timer} asociado a dicho enlace, cosa que provoca la actualización de la tabla de encaminamiento. Si suspendemos el primer enlace el mensaje aludiendo al \textit{timer} aparece en la consola de \texttt{R2} y acto seguido se reanuda el ping en cuestión. Como el tiempo de propagación de este cambio en \texttt{OSPF} es muy rápido, apenas notamos diferencias entre la suspensión de ambos enlaces.\\
+
+            Solo nos queda señalar que como la cadencia de los \texttt{ping}s es de $1\ s$, ya que no hemos configurado lo contrario, conocer el tiempo de recuperación equivale a restar el número de secuencia de \texttt{ICMP} (\texttt{icmp\_seq}) del primer mensaje tras la recuperación y el último que se emitió al haber una correspondencia directa entre número de secuencia y segundo de emisión.
+
+    \section{Conclusiones}
+            Tras finalizar la práctica tenemos un entendimiento mucho más profundo del balanceo de carga en redes de computadores así como el efecto de esta posibilidad de escoger rutas, y las diferencias entre ellas, sobre flujos de tráfico que empleen los servicios tanto de \texttt{UDP} como de \texttt{TCP}.
 \end{document}
